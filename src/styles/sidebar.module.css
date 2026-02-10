@@ -1,0 +1,149 @@
+
+.sidebarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 4rem; /* h-16 */
+  padding-left: 1.5rem; /* px-6 */
+  padding-right: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.sidebarBrand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* gap-2 */
+}
+
+.sidebarIcon {
+  width: 2rem; /* w-8 */
+  height: 2rem; /* h-8 */
+  color: hsl(var(--sidebar-primary));
+}
+
+.sidebarTitle {
+  font-weight: 600; /* font-semibold */
+}
+
+
+.container {
+  flex: 1;
+  display: flex;
+  background: #f5f5f5;
+}
+
+.sidebar {
+  width: 20%;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh);
+  border-right: 1px solid #e5e5e5;
+}
+
+.sidebar_nav {
+  flex: 1;
+  padding: 1rem; /* px-4 py-4 */
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem; /* space-y-1 */
+}
+
+.sidebar_nav_item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* gap-3 */
+  padding: 0.625rem 0.75rem; /* py-2.5 px-3 */
+  border-radius: 0.5rem; /* rounded-lg */
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 500; /* font-medium */
+  color: #334155; /* slate-700 */
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.sidebar_nav_item:hover {
+  background-color: #f1f5f9; /* slate-100 */
+}
+
+.sidebar_nav_item.active {
+  background-color: #eff6ff; /* blue-50 */
+  color: #1d4ed8; /* blue-700 */
+}
+
+.sidebar_nav_icon {
+  width: 1.25rem; /* w-5 */
+  height: 1.25rem; /* h-5 */
+  flex-shrink: 0;
+}
+
+.HomeArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 80%;
+  background-color: #f5f5f5;
+  min-height: calc(100vh);
+}
+
+/* Container */
+.sidebarUser {
+  padding: 1rem; /* p-4 */
+  border-top: 1px solid hsl(var(--sidebar-border));
+}
+
+/* Botão do usuário */
+.userButton {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* gap-3 */
+  width: 100%;
+  padding: 0.5rem 0.75rem; /* px-3 py-2 */
+  border-radius: 0.5rem; /* rounded-lg */
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.userButton:hover {
+  background-color: hsl(var(--sidebar-accent));
+}
+
+/* Avatar */
+.userAvatar {
+  width: 2.25rem; /* w-9 */
+  height: 2.25rem; /* h-9 */
+}
+
+.userAvatarFallback {
+  background-color: hsl(var(--sidebar-primary));
+  color: hsl(var(--sidebar-primary-foreground));
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* Infos */
+.userInfo {
+  text-align: left;
+}
+
+.userName {
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 500;
+}
+
+.userRole {
+  font-size: 0.75rem; /* text-xs */
+  opacity: 0.7;
+}
+
+/* Dropdown */
+.userDropdown {
+  width: 14rem; /* w-56 */
+}
+
+/* Logout */
+.logoutItem {
+  color: hsl(var(--destructive));
+}

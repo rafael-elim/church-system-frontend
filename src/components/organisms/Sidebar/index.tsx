@@ -24,8 +24,10 @@ import {
 } from "@/components/molecules/DropdownMenu";
 import { Avatar, AvatarFallback } from "@/components/atoms/Avatar";
 
+import styles from '@/styles/sidebar.module.css';
+
 const navigation = [
-  { name: "Dashboard", href: "/", icon: LayoutDashboard },
+  { name: "Dashboard", href: "/home", icon: LayoutDashboard },
   { name: "Membros", href: "/members", icon: Users },
   { name: "Congregações", href: "/branches", icon: Building2 },
   { name: "Eventos", href: "/events", icon: Calendar },
@@ -40,90 +42,70 @@ const currentUser = {
   initials: "PJ",
 };
 
-type SidebarProps = {
-  open: boolean;
-  onClose: () => void;
-};
 
-export function Sidebar({ open, onClose }: SidebarProps) {
+
+export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside
-      className={cn(
-        "fixed top-0 left-0 z-50 h-screen w-64",
-        "border-r bg-sidebar text-sidebar-foreground border-sidebar-border",
-        "transition-transform duration-300",
-        // MOBILE: começa fechada
-        "-translate-x-full",
-        // DESKTOP: sempre aberta
-        "lg:translate-x-0",
-        // MOBILE: quando abrir
-        open && "translate-x-0"
-      )}
-    >
+    <aside className={styles.sidebar}>
       <div className="flex flex-col h-full">
         {/* Logo */}
-        <div className="flex items-center justify-between h-16 px-6 border-b border-sidebar-border">
-          <div className="flex items-center gap-2">
-            <Church className="w-8 h-8 text-sidebar-primary" />
-            <span className="font-semibold">ChurchAdmin</span>
+        <div className={styles.sidebarHeader}>
+          <div className={styles.sidebarBrand}>
+            <Church className={styles.sidebarIcon} />
+            <span className={styles.sidebarTitle}>ChurchAdmin</span>
           </div>
-
-          <button className="lg:hidden" onClick={onClose}>
-            <X className="w-5 h-5" />
-          </button>
         </div>
 
+
         {/* Menu */}
-        <nav className="flex-1 px-4 py-4 space-y-1">
+        <nav className={styles.sidebar_nav}>
           {navigation.map((item) => {
             const isActive = pathname === item.href;
 
             return (
-              <Link
+              <a
                 key={item.name}
                 href={item.href}
-                onClick={onClose}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                  isActive
-                    ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                    : "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                  styles.sidebar_nav_item,
+                  isActive && styles.active
                 )}
               >
-                <item.icon className="w-5 h-5" />
+                <item.icon className={styles.sidebar_nav_icon} />
                 {item.name}
-              </Link>
+              </a>
             );
           })}
         </nav>
 
+
         {/* Usuário */}
-        <div className="p-4 border-t border-sidebar-border">
+        <div className={styles.sidebarUser}>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-3 w-full px-3 py-2 rounded-lg hover:bg-sidebar-accent">
-                <Avatar className="w-9 h-9">
-                  <AvatarFallback className="bg-sidebar-primary text-sidebar-primary-foreground">
+              <button className={styles.userButton}>
+                <Avatar className={styles.userAvatar}>
+                  <AvatarFallback className={styles.userAvatarFallback}>
                     {currentUser.initials}
                   </AvatarFallback>
                 </Avatar>
 
-                <div className="text-left">
-                  <p className="text-sm font-medium">{currentUser.name}</p>
-                  <p className="text-xs opacity-70">{currentUser.role}</p>
+                <div className={styles.userInfo}>
+                  <p className={styles.userName}>{currentUser.name}</p>
+                  <p className={styles.userRole}>{currentUser.role}</p>
                 </div>
               </button>
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuContent align="end" className={styles.userDropdown}>
               <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Perfil</DropdownMenuItem>
               <DropdownMenuItem>Preferências</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive">
+              <DropdownMenuItem className={styles.logoutItem}>
                 Sair
               </DropdownMenuItem>
             </DropdownMenuContent>
