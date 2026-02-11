@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import { AddMemberDialog } from "../AddMemberDialog";
 
 interface MembersHeaderProps {
   onAddClick: () => void;
@@ -17,10 +18,12 @@ export function MembersHeader({ onAddClick }: MembersHeaderProps) {
         </p>
       </div>
 
-      <Button onClick={onAddClick} className="gap-2">
-        <Plus className="w-4 h-4" />
-        Adicionar Membro
-      </Button>
+      {/* <MembersHeader /> */}
+        <AddMemberDialog
+          onAddMember={(member) => {
+            console.log("Novo membro:", member);
+          }}
+        />
     </div>
   );
 }
