@@ -1,5 +1,5 @@
 "use client";
-
+import '../globals.css';
 import { useState } from "react";
 import { Sidebar } from "@/components/organisms/Sidebar";
 
