@@ -4,87 +4,70 @@ import { MembersHeader } from "@/components/organisms/MembersHeader";
 import { MembersFilters } from "@/components/organisms/MembersFilters";
 import { MembersTable } from "@/components/organisms/MembersTable";
 import { Card, CardContent } from "@/components/ui/card";
-import { useState } from "react";
+import {
+  getMemberStats,
+  listMembers,
+  MemberResponse,
+  MemberStatsResponse,
+  MemberStatus,
+} from "@/services/members";
+import { useEffect, useMemo, useState } from "react";
 
-const mockMembers = [
-    {
-      id: 1,
-      name: "Maria Silva Santos",
-      email: "maria.silva@email.com",
-      phone: "(11) 98765-4321",
-      branch: "Central",
-      role: "Membro",
-      status: "Ativo",
-      joined: "15/03/2020",
-      initials: "MS",
-    },
-    {
-      id: 2,
-      name: "José Carlos Oliveira",
-      email: "jose.carlos@email.com",
-      phone: "(11) 97654-3210",
-      branch: "Zona Norte",
-      role: "Líder",
-      status: "Ativo",
-      joined: "22/07/2019",
-      initials: "JC",
-    },
-    {
-      id: 3,
-      name: "Ana Paula Costa",
-      email: "ana.paula@email.com",
-      phone: "(11) 96543-2109",
-      branch: "Central",
-      role: "Secretária",
-      status: "Ativo",
-      joined: "10/01/2021",
-      initials: "AP",
-    },
-    {
-      id: 4,
-      name: "Pedro Henrique Alves",
-      email: "pedro.alves@email.com",
-      phone: "(11) 95432-1098",
-      branch: "Zona Sul",
-      role: "Membro",
-      status: "Ativo",
-      joined: "05/08/2022",
-      initials: "PH",
-    },
-    {
-      id: 5,
-      name: "Juliana Ferreira Lima",
-      email: "juliana.lima@email.com",
-      phone: "(11) 94321-0987",
-      branch: "Centro",
-      role: "Líder",
-      status: "Ativo",
-      joined: "18/11/2020",
-      initials: "JF",
-    },
-  ];
-
-  
+function getInitials(name: string) {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+}
 
 export default function Members() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedBranch, setSelectedBranch] = useState("Todas");
-  const [selectedRole, setSelectedRole] = useState("Todos");
+  const [selectedStatus, setSelectedStatus] = useState("ALL");
+  const [members, setMembers] = useState<MemberResponse[]>([]);
+  const [stats, setStats] = useState<MemberStatsResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const filteredMembers = mockMembers.filter((member) => {
-    const matchesSearch =
-      member.name.toLowerCase().includes(searchTerm.toLowerCase());
+  useEffect(() => {
+    const timeoutId = window.setTimeout(async () => {
+      setLoading(true);
+      setError("");
 
-    const matchesBranch =
-      selectedBranch === "Todas" ||
-      member.branch === selectedBranch;
+      try {
+        const status =
+          selectedStatus === "ALL" ? undefined : (selectedStatus as MemberStatus);
 
-    const matchesRole =
-      selectedRole === "Todos" ||
-      member.role === selectedRole;
+        const [membersPage, memberStats] = await Promise.all([
+          listMembers({
+            name: searchTerm.trim() || undefined,
+            status,
+            size: 50,
+          }),
+          getMemberStats(),
+        ]);
 
-    return matchesSearch && matchesBranch && matchesRole;
-  });
+        setMembers(membersPage.content);
+        setStats(memberStats);
+      } catch {
+        setError("Não foi possível carregar os membros.");
+      } finally {
+        setLoading(false);
+      }
+    }, 300);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [searchTerm, selectedStatus]);
+
+  const tableMembers = useMemo(
+    () =>
+      members.map((member) => ({
+        ...member,
+        initials: getInitials(member.name),
+      })),
+    [members]
+  );
 
 
   return (
@@ -95,25 +78,29 @@ export default function Members() {
         <Card>
           <CardContent className="p-6">
             <p className="text-sm text-slate-600 mb-1">Total de Membros</p>
-            <p className="text-slate-900">1,248</p>
+            <p className="text-slate-900">{stats?.totalMembers ?? "-"}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-6">
             <p className="text-sm text-slate-600 mb-1">Novos Este Mês</p>
-            <p className="text-slate-900 text-green-600">+24</p>
+            <p className="text-slate-900 text-green-600">
+              {stats ? `+${stats.newThisMonth}` : "-"}
+            </p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-6">
             <p className="text-sm text-slate-600 mb-1">Líderes Ativos</p>
-            <p className="text-slate-900">42</p>
+            <p className="text-slate-900">{stats?.activeLeaders ?? "-"}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-6">
             <p className="text-sm text-slate-600 mb-1">Taxa de Retenção</p>
-            <p className="text-slate-900">94%</p>
+            <p className="text-slate-900">
+              {stats ? `${stats.retentionRate}%` : "-"}
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -121,13 +108,25 @@ export default function Members() {
       <MembersFilters
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
-        selectedBranch={selectedBranch}
-        onBranchChange={setSelectedBranch}
-        selectedRole={selectedRole}
-        onRoleChange={setSelectedRole}
+        selectedStatus={selectedStatus}
+        onStatusChange={setSelectedStatus}
       />
 
-      <MembersTable members={filteredMembers} />
+      {error && (
+        <Card>
+          <CardContent className="p-6 text-sm text-red-600">{error}</CardContent>
+        </Card>
+      )}
+
+      {loading ? (
+        <Card>
+          <CardContent className="p-6 text-sm text-slate-600">
+            Carregando membros...
+          </CardContent>
+        </Card>
+      ) : (
+        <MembersTable members={tableMembers} />
+      )}
     </div>
   );
 }
