@@ -7,6 +7,9 @@ export interface MemberResponse {
   name: string;
   phone: string | null;
   email: string | null;
+  birthDate: string | null;
+  baptismDate: string | null;
+  address: string | null;
   status: MemberStatus;
 }
 
@@ -17,6 +20,18 @@ export interface MemberStatsResponse {
   retentionRate: number;
 }
 
+export interface CreateMemberRequest {
+  name: string;
+  status: MemberStatus;
+  birthDate?: string;
+  baptismDate?: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+}
+
+export type UpdateMemberRequest = CreateMemberRequest;
+
 export interface PageResponse<T> {
   content: T[];
   totalElements: number;
@@ -25,17 +40,29 @@ export interface PageResponse<T> {
   size: number;
 }
 
-interface ListMembersParams {
+export interface MemberFilters {
   name?: string;
   status?: MemberStatus;
   page?: number;
   size?: number;
 }
 
-export async function listMembers(params: ListMembersParams = {}) {
+export async function listMembers(params: MemberFilters = {}) {
   const response = await api.get<PageResponse<MemberResponse>>('/members', {
     params,
   });
+
+  return response.data;
+}
+
+export async function createMember(payload: CreateMemberRequest) {
+  const response = await api.post('/members', payload);
+
+  return response.data as MemberResponse;
+}
+
+export async function updateMember(id: string, payload: UpdateMemberRequest) {
+  const response = await api.put<MemberResponse>(`/members/${id}`, payload);
 
   return response.data;
 }

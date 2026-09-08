@@ -1,12 +1,25 @@
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import { AddMemberDialog } from "../AddMemberDialog";
+import { Button } from "@/components/ui/button";
+import { CreateMemberRequest, MemberResponse } from "@/services/members";
+import { Plus } from "lucide-react";
 
 interface MembersHeaderProps {
-  onAddClick: () => void;
+  modalOpen: boolean;
+  mode: "create" | "edit";
+  selectedMember: MemberResponse | null;
+  onNewMember: () => void;
+  onModalOpenChange: (open: boolean) => void;
+  onSubmitMember: (member: CreateMemberRequest) => Promise<void>;
 }
 
-export function MembersHeader({ onAddClick }: MembersHeaderProps) {
+export function MembersHeader({
+  modalOpen,
+  mode,
+  selectedMember,
+  onNewMember,
+  onModalOpenChange,
+  onSubmitMember,
+}: MembersHeaderProps) {
   return (
     <div className="flex items-center justify-between">
       <div>
@@ -18,12 +31,18 @@ export function MembersHeader({ onAddClick }: MembersHeaderProps) {
         </p>
       </div>
 
-      {/* <MembersHeader /> */}
-        <AddMemberDialog
-          onAddMember={(member) => {
-            console.log("Novo membro:", member);
-          }}
-        />
+      <Button className="gap-2" onClick={onNewMember}>
+        <Plus className="w-4 h-4" />
+        Adicionar Membro
+      </Button>
+
+      <AddMemberDialog
+        open={modalOpen}
+        mode={mode}
+        member={selectedMember}
+        onOpenChange={onModalOpenChange}
+        onSubmitMember={onSubmitMember}
+      />
     </div>
   );
 }
