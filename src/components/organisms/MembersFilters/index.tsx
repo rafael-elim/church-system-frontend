@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -9,13 +10,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 
 interface MembersFiltersProps {
   searchTerm: string;
   onSearchChange: (value: string) => void;
   selectedStatus: string;
   onStatusChange: (value: string) => void;
+  onClear: () => void;
 }
 
 export function MembersFilters({
@@ -23,6 +25,7 @@ export function MembersFilters({
   onSearchChange,
   selectedStatus,
   onStatusChange,
+  onClear,
 }: MembersFiltersProps) {
 
   const statuses = [
@@ -58,6 +61,16 @@ export function MembersFilters({
               ))}
             </SelectContent>
           </Select>
+
+          <Button
+            type="button"
+            variant="outline"
+            className="gap-2"
+            onClick={onClear}
+          >
+            <X className="h-4 w-4" />
+            Limpar
+          </Button>
 
         </div>
       </CardContent>

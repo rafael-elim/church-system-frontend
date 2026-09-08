@@ -28,21 +28,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { MemberResponse } from "@/services/members";
 
-interface Member {
-  id: string;
-  name: string;
-  email: string | null;
-  phone: string | null;
-  status: "VISITOR" | "MEMBER";
+interface TableMember extends MemberResponse {
   initials: string;
 }
 
 interface MembersTableProps {
-  members: Member[];
+  members: TableMember[];
+  onEditMember: (member: MemberResponse) => void;
 }
 
-export function MembersTable({ members }: MembersTableProps) {
+export function MembersTable({ members, onEditMember }: MembersTableProps) {
   const statusLabels = {
     VISITOR: "Visitante",
     MEMBER: "Membro",
@@ -121,7 +118,7 @@ export function MembersTable({ members }: MembersTableProps) {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => onEditMember(member)}>
                           <Edit className="w-4 h-4 mr-2" />
                           Editar
                         </DropdownMenuItem>
