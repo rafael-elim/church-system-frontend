@@ -2,6 +2,7 @@
 import '../globals.css';
 import { useState } from "react";
 import { Sidebar } from "@/components/organisms/Sidebar";
+import { AuthGuard } from "@/components/guards/AuthGuard";
 
 import styles from '@/styles/home.module.css';
 
@@ -9,20 +10,22 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className={styles.page}>
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-      <div className={styles.container}>
-        <Sidebar />
+    <AuthGuard>
+      <div className={styles.page}>
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+        <div className={styles.container}>
+          <Sidebar />
 
-        <div className={styles.HomeArea}>
-            {children}
+          <div className={styles.HomeArea}>
+              {children}
+          </div>
         </div>
       </div>
-    </div>
+    </AuthGuard>
   );
 }

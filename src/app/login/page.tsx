@@ -8,22 +8,29 @@ import { AuthCard } from '@/components/molecules/AuthCard/AuthCard';
 import Link from 'next/link';
 
 export default function LoginPage() {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
   const { login } = useAuth();
 
   async function handleLogin() {
+    setError('');
+
     try {
       const response = await api.post('/auth/login', {
-        username,
+        email,
         password,
       });
 
-      login(response.data.access_token, response.data.user);
-      router.push('/chat');
-    } catch (err) {
+      login(response.data.token, {
+        id: response.data.userId,
+        email: response.data.email,
+        name: response.data.name,
+        companyId: response.data.companyId,
+      });
+      router.push('/home');
+    } catch {
       setError('Usuário ou senha inválidos');
     }
   }
@@ -39,13 +46,18 @@ export default function LoginPage() {
       <h1>Login</h1>
 
       <input
-        placeholder="Usuário"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
+        id="email"
+        name="email"
+        type="email"
+        placeholder="E-mail"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
       />
       <br />
 
       <input
+        id="password"
+        name="password"
         type="password"
         placeholder="Senha"
         value={password}

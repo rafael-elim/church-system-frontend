@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { api, setAuthToken } from '@/services/api';
 import { AuthUser } from '@/types/auth-user';
 
@@ -41,13 +41,13 @@ export function useAuth() {
     setAuth({ token, user, loading: false });
   }
 
-  function logout() {
+  const logout = useCallback(() => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
 
     setAuthToken('');
     setAuth({ token: null, user: null, loading: false });
-  }
+  }, []);
 
   useEffect(() => {
     async function validateToken() {
@@ -70,7 +70,7 @@ export function useAuth() {
     }
 
     validateToken();
-  }, []);
+  }, [logout, token]);
 
   return {
     token,
