@@ -20,6 +20,7 @@ import {
   MoreVertical,
   Edit,
   Trash2,
+  Send,
 } from "lucide-react";
 
 import {
@@ -37,12 +38,19 @@ interface TableMember extends MemberResponse {
 interface MembersTableProps {
   members: TableMember[];
   onEditMember: (member: MemberResponse) => void;
+  onGenerateActivationLink: (member: MemberResponse) => void;
 }
 
-export function MembersTable({ members, onEditMember }: MembersTableProps) {
+export function MembersTable({ members, onEditMember, onGenerateActivationLink }: MembersTableProps) {
   const statusLabels = {
     VISITOR: "Visitante",
     MEMBER: "Membro",
+  };
+
+  const accountLabels = {
+    NO_ACCOUNT: "Sem conta",
+    PENDING_ACTIVATION: "Conta não ativada",
+    ACTIVE: "Conta ativa",
   };
 
   return (
@@ -54,6 +62,7 @@ export function MembersTable({ members, onEditMember }: MembersTableProps) {
               <TableHead>Membro</TableHead>
               <TableHead>Contato</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>Conta</TableHead>
               <TableHead className="w-[50px]" />
             </TableRow>
           </TableHeader>
@@ -61,7 +70,7 @@ export function MembersTable({ members, onEditMember }: MembersTableProps) {
           <TableBody>
             {members.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
                   Nenhum membro encontrado.
                 </TableCell>
               </TableRow>
@@ -109,6 +118,12 @@ export function MembersTable({ members, onEditMember }: MembersTableProps) {
                     </Badge>
                   </TableCell>
 
+                  <TableCell>
+                    <Badge variant={member.accountStatus === "ACTIVE" ? "default" : "outline"}>
+                      {accountLabels[member.accountStatus ?? "NO_ACCOUNT"]}
+                    </Badge>
+                  </TableCell>
+
                   {/* Ações */}
                   <TableCell>
                     <DropdownMenu>
@@ -122,6 +137,12 @@ export function MembersTable({ members, onEditMember }: MembersTableProps) {
                           <Edit className="w-4 h-4 mr-2" />
                           Editar
                         </DropdownMenuItem>
+                        {member.userId && member.accountStatus !== "ACTIVE" && (
+                          <DropdownMenuItem onClick={() => onGenerateActivationLink(member)}>
+                            <Send className="w-4 h-4 mr-2" />
+                            Gerar link de acesso
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuItem className="text-red-600">
                           <Trash2 className="w-4 h-4 mr-2" />
                           Excluir

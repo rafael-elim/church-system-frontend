@@ -6,6 +6,8 @@ import { api } from '@/services/api';
 import { useAuth } from '@/hooks/useAuth';
 import { AuthCard } from '@/components/molecules/AuthCard/AuthCard';
 import Link from 'next/link';
+import { AuthUser } from '@/types/auth-user';
+import { getDefaultAuthenticatedPath } from '@/utils/permissions';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -29,7 +31,10 @@ export default function LoginPage() {
         name: response.data.name,
         companyId: response.data.companyId,
       });
-      router.push('/home');
+
+      const me = await api.get<AuthUser>('/auth/me');
+      login(response.data.token, me.data);
+      router.push(getDefaultAuthenticatedPath(me.data));
     } catch {
       setError('Usuário ou senha inválidos');
     }

@@ -15,6 +15,7 @@ import {
   createMember,
   CreateMemberRequest,
   getMemberStats,
+  generateUserActivationLink,
   listMembers,
   MemberResponse,
   MemberStatsResponse,
@@ -140,6 +141,22 @@ export default function Members() {
     setRefreshKey((current) => current + 1);
   }
 
+  async function handleGenerateActivationLink(member: MemberResponse) {
+    if (!member.userId) {
+      toast.error("Este membro ainda não possui uma conta de acesso.");
+      return;
+    }
+
+    try {
+      const response = await generateUserActivationLink(member.userId);
+      await navigator.clipboard.writeText(response.activationLink);
+      toast.success("Link de acesso gerado e copiado.");
+      setRefreshKey((current) => current + 1);
+    } catch {
+      toast.error("Não foi possível gerar o link de acesso.");
+    }
+  }
+
   function goToPage(page: number) {
     setPageInfo((current) => ({ ...current, page }));
   }
@@ -218,7 +235,11 @@ export default function Members() {
         </Card>
       ) : (
         <>
-          <MembersTable members={tableMembers} onEditMember={handleEditMember} />
+          <MembersTable
+            members={tableMembers}
+            onEditMember={handleEditMember}
+            onGenerateActivationLink={handleGenerateActivationLink}
+          />
 
           <div className="flex flex-col items-center justify-between gap-4 text-sm text-slate-600 md:flex-row">
             <span>

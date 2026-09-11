@@ -11,6 +11,8 @@ export interface MemberResponse {
   baptismDate: string | null;
   address: string | null;
   status: MemberStatus;
+  userId?: string | null;
+  accountStatus?: 'NO_ACCOUNT' | 'PENDING_ACTIVATION' | 'ACTIVE';
 }
 
 export interface MemberStatsResponse {
@@ -69,6 +71,15 @@ export async function updateMember(id: string, payload: UpdateMemberRequest) {
 
 export async function getMemberStats() {
   const response = await api.get<MemberStatsResponse>('/members/stats');
+
+  return response.data;
+}
+
+export async function generateUserActivationLink(userId: string) {
+  const response = await api.post<{
+    activationLink: string;
+    expiresAt: string;
+  }>(`/users/${userId}/activation`);
 
   return response.data;
 }
