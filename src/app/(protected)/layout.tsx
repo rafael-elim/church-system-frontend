@@ -3,6 +3,7 @@ import '../globals.css';
 import { useState } from "react";
 import { Sidebar } from "@/components/organisms/Sidebar";
 import { AuthGuard } from "@/components/guards/AuthGuard";
+import { RoutePermissionGuard } from "@/components/guards/RoutePermissionGuard";
 
 import styles from '@/styles/home.module.css';
 
@@ -22,7 +23,7 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
           <Sidebar />
 
           <div className={styles.HomeArea}>
-              {children}
+              <RoutePermissionGuard>{children}</RoutePermissionGuard>
           </div>
         </div>
       </div>

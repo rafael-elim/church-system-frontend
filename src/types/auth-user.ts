@@ -4,4 +4,6 @@ export interface AuthUser {
   name: string;
   companyId: string;
   roles?: string[];
+  memberId?: string | null;
+  memberStatus?: "VISITOR" | "MEMBER" | null;
 }

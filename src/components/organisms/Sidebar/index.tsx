@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
@@ -11,8 +10,11 @@ import {
   BookOpen,
   Settings,
   Church,
-  X,
+  GraduationCap,
+  UserCircle,
 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { AppPermission, can, isAdmin, isMember, isVisitor } from "@/utils/permissions";
 import { cn } from "@/utils/utils";
 import {
   DropdownMenu,
@@ -26,26 +28,46 @@ import { Avatar, AvatarFallback } from "@/components/atoms/Avatar";
 
 import styles from '@/styles/sidebar.module.css';
 
-const navigation = [
-  { name: "Dashboard", href: "/home", icon: LayoutDashboard },
-  { name: "Membros", href: "/members", icon: Users },
-  { name: "Congregações", href: "/branches", icon: Building2 },
-  { name: "Eventos", href: "/events", icon: Calendar },
-  { name: "Comunicação", href: "/communication", icon: MessageSquare },
-  { name: "Discipulado", href: "/discipleship", icon: BookOpen },
-  { name: "Configurações", href: "/settings", icon: Settings },
+const navigation: Array<{
+  name: string;
+  href: string;
+  icon: typeof LayoutDashboard;
+  permission: AppPermission;
+}> = [
+  { name: "Início", href: "/home", icon: LayoutDashboard, permission: "VIEW_HOME" },
+  { name: "Membros", href: "/members", icon: Users, permission: "MANAGE_MEMBERS" },
+  { name: "Congregações", href: "/branches", icon: Building2, permission: "MANAGE_MEMBERS" },
+  { name: "Eventos", href: "/events", icon: Calendar, permission: "MANAGE_MEMBERS" },
+  { name: "Comunicação", href: "/communication", icon: MessageSquare, permission: "MANAGE_MEMBERS" },
+  { name: "Discipulado", href: "/discipleship", icon: BookOpen, permission: "MANAGE_DISCIPLESHIP" },
+  { name: "Meu Discipulado", href: "/my-discipleship", icon: BookOpen, permission: "VIEW_MY_DISCIPLESHIP" },
+  { name: "Meus Grupos", href: "/my-groups", icon: Users, permission: "VIEW_MY_GROUPS" },
+  { name: "Meus Cursos", href: "/my-courses", icon: GraduationCap, permission: "VIEW_MY_COURSES" },
+  { name: "Perfil", href: "/profile", icon: UserCircle, permission: "VIEW_PROFILE" },
+  { name: "Configurações", href: "/settings", icon: Settings, permission: "MANAGE_MEMBERS" },
 ];
 
-const currentUser = {
-  name: "Pastor João Silva",
-  role: "Pastor",
-  initials: "PJ",
-};
+function getInitials(name?: string) {
+  return (name ?? "Usuário")
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
+}
 
-
+function getRoleLabel(user: ReturnType<typeof useAuth>["user"]) {
+  if (isAdmin(user)) return "Administrador";
+  if (isMember(user)) return "Membro";
+  if (isVisitor(user)) return "Visitante";
+  return "Usuário";
+}
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { user, logout } = useAuth();
+  const menuItems = navigation.filter((item) => can(user, item.permission));
 
   return (
     <aside className={styles.sidebar}>
@@ -61,8 +83,8 @@ export function Sidebar() {
 
         {/* Menu */}
         <nav className={styles.sidebar_nav}>
-          {navigation.map((item) => {
-            const isActive = pathname === item.href;
+          {menuItems.map((item) => {
+            const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
 
             return (
               <a
@@ -88,13 +110,13 @@ export function Sidebar() {
               <button className={styles.userButton}>
                 <Avatar className={styles.userAvatar}>
                   <AvatarFallback className={styles.userAvatarFallback}>
-                    {currentUser.initials}
+                    {getInitials(user?.name)}
                   </AvatarFallback>
                 </Avatar>
 
                 <div className={styles.userInfo}>
-                  <p className={styles.userName}>{currentUser.name}</p>
-                  <p className={styles.userRole}>{currentUser.role}</p>
+                  <p className={styles.userName}>{user?.name ?? "Usuário"}</p>
+                  <p className={styles.userRole}>{getRoleLabel(user)}</p>
                 </div>
               </button>
             </DropdownMenuTrigger>
@@ -102,10 +124,12 @@ export function Sidebar() {
             <DropdownMenuContent align="end" className={styles.userDropdown}>
               <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Perfil</DropdownMenuItem>
+              <DropdownMenuItem>
+                <a href="/profile">Perfil</a>
+              </DropdownMenuItem>
               <DropdownMenuItem>Preferências</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className={styles.logoutItem}>
+              <DropdownMenuItem className={styles.logoutItem} onClick={logout}>
                 Sair
               </DropdownMenuItem>
             </DropdownMenuContent>
