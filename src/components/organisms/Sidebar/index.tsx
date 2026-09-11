@@ -36,15 +36,15 @@ const navigation: Array<{
 }> = [
   { name: "Início", href: "/home", icon: LayoutDashboard, permission: "VIEW_HOME" },
   { name: "Membros", href: "/members", icon: Users, permission: "MANAGE_MEMBERS" },
-  { name: "Congregações", href: "/branches", icon: Building2, permission: "MANAGE_MEMBERS" },
-  { name: "Eventos", href: "/events", icon: Calendar, permission: "MANAGE_MEMBERS" },
-  { name: "Comunicação", href: "/communication", icon: MessageSquare, permission: "MANAGE_MEMBERS" },
+  { name: "Congregações", href: "/branches", icon: Building2, permission: "MANAGE_BRANCHES" },
+  { name: "Eventos", href: "/events", icon: Calendar, permission: "MANAGE_EVENTS" },
+  { name: "Comunicação", href: "/communication", icon: MessageSquare, permission: "MANAGE_COMMUNICATION" },
   { name: "Discipulado", href: "/discipleship", icon: BookOpen, permission: "MANAGE_DISCIPLESHIP" },
   { name: "Meu Discipulado", href: "/my-discipleship", icon: BookOpen, permission: "VIEW_MY_DISCIPLESHIP" },
   { name: "Meus Grupos", href: "/my-groups", icon: Users, permission: "VIEW_MY_GROUPS" },
   { name: "Meus Cursos", href: "/my-courses", icon: GraduationCap, permission: "VIEW_MY_COURSES" },
   { name: "Perfil", href: "/profile", icon: UserCircle, permission: "VIEW_PROFILE" },
-  { name: "Configurações", href: "/settings", icon: Settings, permission: "MANAGE_MEMBERS" },
+  { name: "Configurações", href: "/settings", icon: Settings, permission: "MANAGE_SETTINGS" },
 ];
 
 function getInitials(name?: string) {

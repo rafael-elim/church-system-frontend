@@ -4,8 +4,12 @@ export type AppPermission =
   | "VIEW_HOME"
   | "VIEW_PROFILE"
   | "MANAGE_MEMBERS"
+  | "MANAGE_BRANCHES"
+  | "MANAGE_EVENTS"
+  | "MANAGE_COMMUNICATION"
   | "MANAGE_DISCIPLESHIP"
   | "MANAGE_COURSE_CONTENT"
+  | "MANAGE_SETTINGS"
   | "VIEW_MY_DISCIPLESHIP"
   | "VIEW_MY_GROUPS"
   | "VIEW_MY_COURSES";
@@ -35,8 +39,12 @@ export function can(user: AuthUser | null, permission: AppPermission) {
 
   if (
     permission === "MANAGE_MEMBERS" ||
+    permission === "MANAGE_BRANCHES" ||
+    permission === "MANAGE_EVENTS" ||
+    permission === "MANAGE_COMMUNICATION" ||
     permission === "MANAGE_DISCIPLESHIP" ||
-    permission === "MANAGE_COURSE_CONTENT"
+    permission === "MANAGE_COURSE_CONTENT" ||
+    permission === "MANAGE_SETTINGS"
   ) {
     return isAdmin(user);
   }
@@ -66,8 +74,12 @@ export function getDefaultAuthenticatedPath(user: AuthUser | null) {
 
 export function permissionForPath(pathname: string): AppPermission | null {
   if (pathname.startsWith("/members")) return "MANAGE_MEMBERS";
+  if (pathname.startsWith("/branches")) return "MANAGE_BRANCHES";
+  if (pathname.startsWith("/events")) return "MANAGE_EVENTS";
+  if (pathname.startsWith("/communication")) return "MANAGE_COMMUNICATION";
   if (pathname.startsWith("/discipleship")) return "MANAGE_DISCIPLESHIP";
   if (pathname.includes("/content")) return "MANAGE_COURSE_CONTENT";
+  if (pathname.startsWith("/settings")) return "MANAGE_SETTINGS";
   if (pathname.startsWith("/my-discipleship")) return "VIEW_MY_DISCIPLESHIP";
   if (pathname.startsWith("/my-groups")) return "VIEW_MY_GROUPS";
   if (pathname.startsWith("/my-courses")) return "VIEW_MY_COURSES";
